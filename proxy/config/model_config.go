@@ -39,6 +39,9 @@ type ModelConfig struct {
 	// override global setting
 	SendLoadingState *bool `yaml:"sendLoadingState"`
 
+	// Hot-reload: override global reloadRestartModels for this model
+	ForceRestart *bool `yaml:"forceRestart"`
+
 	// ChatTemplateKwargs: default chat_template_kwargs to apply to all requests
 	// These are merged with request-level values, with request values taking precedence
 	// Useful for setting model-specific defaults like enable_thinking for Qwen3
