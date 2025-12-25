@@ -26,6 +26,28 @@ This commit automatically rebases onto the latest llama-swap nightly.
 ## How to install
 Use the original [Building from source](#building-from-source) instructions, and overwrite your installed llama-swap executable with the newly built one.
 
+### Adding to an existing llama.cpp Dockerfile
+
+If you already have a llama.cpp Dockerfile and want to add llama-swappo as your entrypoint:
+
+```dockerfile
+# Build llama-swappo in a separate stage
+FROM golang:1.23-bookworm AS swappo-builder
+RUN apt-get update && apt-get install -y nodejs npm
+WORKDIR /build
+RUN git clone https://github.com/Mootikins/llama-swappo.git .
+RUN make linux
+
+# In your existing llama.cpp image, copy the binary
+FROM your-existing-llama-cpp-image
+COPY --from=swappo-builder /build/build/llama-swap-linux-amd64 /usr/local/bin/llama-swap
+# Or for arm64:
+# COPY --from=swappo-builder /build/build/llama-swap-linux-arm64 /usr/local/bin/llama-swap
+
+ENTRYPOINT ["/usr/local/bin/llama-swap"]
+CMD ["-config", "/app/config.yaml", "-listen", "0.0.0.0:8080"]
+```
+
 ## Configuration
 
 If you're using llama-server, it will try to parse your arguments for the additional metadata it needs like context length.
